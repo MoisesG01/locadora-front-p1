@@ -1,6 +1,19 @@
 const express = require("express");
 const path = require("path");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const app = express();
+
+// Proxy para a API (resolve problema de Mixed Content)
+app.use(
+  "/api",
+  createProxyMiddleware({
+    target: "http://135.222.249.57",
+    changeOrigin: true,
+    pathRewrite: {
+      "^/api": "", // Remove /api do path
+    },
+  })
+);
 
 // Serve os arquivos estáticos da pasta build
 app.use(express.static(path.join(__dirname, "build")));
@@ -14,4 +27,5 @@ app.get("/*", function (req, res) {
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  console.log(`Proxying API requests to http://135.222.249.57`);
 });
