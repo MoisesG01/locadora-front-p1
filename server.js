@@ -12,6 +12,15 @@ app.use(
     pathRewrite: {
       "^/api": "", // Remove /api do path
     },
+    onProxyReq: (proxyReq, req, res) => {
+      console.log(`[Proxy] ${req.method} ${req.url} -> http://135.222.249.57${req.url.replace('/api', '')}`);
+    },
+    onProxyRes: (proxyRes, req, res) => {
+      console.log(`[Proxy Response] ${proxyRes.statusCode} for ${req.method} ${req.url}`);
+    },
+    onError: (err, req, res) => {
+      console.error(`[Proxy Error] ${req.method} ${req.url}:`, err.message);
+    },
   })
 );
 

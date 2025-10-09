@@ -71,8 +71,13 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
       cpf: formData.cpf.replace(/\D/g, ""),
       phone: formData.phone.replace(/\D/g, ""),
       zipCode: formData.zipCode.replace(/\D/g, ""),
+      // Garantir que birthDate não seja undefined se estiver vazio
+      birthDate: formData.birthDate || undefined,
+      // Garantir que driverLicense não seja string vazia
+      driverLicense: formData.driverLicense?.trim() || undefined,
     };
 
+    console.log("Dados enviados para API:", cleanData);
     onSave(cleanData);
   };
 

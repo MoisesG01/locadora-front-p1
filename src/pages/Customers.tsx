@@ -63,11 +63,16 @@ const Customers: React.FC = () => {
 
   const handleCreateCustomer = async (data: CreateCustomerDto) => {
     try {
+      console.log("Criando cliente com dados:", data);
       await customerApi.create(data);
       loadCustomers();
       setShowModal(false);
-    } catch (error) {
+      alert("Cliente criado com sucesso!");
+    } catch (error: any) {
       console.error("Erro ao criar cliente:", error);
+      console.error("Resposta do erro:", error.response?.data);
+      const errorMessage = error.response?.data?.message || error.message;
+      alert(`Erro ao criar cliente: ${JSON.stringify(errorMessage)}`);
     }
   };
 
