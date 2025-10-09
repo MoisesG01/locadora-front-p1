@@ -6,6 +6,7 @@ const app = express();
 // Proxy para a API (resolve problema de Mixed Content)
 app.use(
   "/api",
+  express.json(), // Parse JSON apenas para rotas /api
   createProxyMiddleware({
     target: "http://135.222.249.57",
     changeOrigin: true,
@@ -13,10 +14,25 @@ app.use(
       "^/api": "", // Remove /api do path
     },
     onProxyReq: (proxyReq, req, res) => {
-      console.log(`[Proxy] ${req.method} ${req.url} -> http://135.222.249.57${req.url.replace('/api', '')}`);
+      console.log(
+        `[Proxy] ${req.method} ${
+          req.url
+        } -> http://135.222.249.57${req.url.replace("/api", "")}`
+      );
+
+      // Se houver body, re-serialize e envie
+      if (req.body && Object.keys(req.body).length > 0) {
+        const bodyData = JSON.stringify(req.body);
+        proxyReq.setHeader("Content-Type", "application/json");
+        proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+        proxyReq.write(bodyData);
+        console.log("[Proxy] Body enviado:", bodyData);
+      }
     },
     onProxyRes: (proxyRes, req, res) => {
-      console.log(`[Proxy Response] ${proxyRes.statusCode} for ${req.method} ${req.url}`);
+      console.log(
+        `[Proxy Response] ${proxyRes.statusCode} for ${req.method} ${req.url}`
+      );
     },
     onError: (err, req, res) => {
       console.error(`[Proxy Error] ${req.method} ${req.url}:`, err.message);
