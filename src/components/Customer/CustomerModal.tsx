@@ -56,7 +56,24 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+
+    // Validação adicional
+    if (!formData.city || !formData.state || !formData.zipCode) {
+      alert(
+        "Por favor, preencha todos os campos obrigatórios (Cidade, Estado e CEP)"
+      );
+      return;
+    }
+
+    // Remove formatação do CPF, telefone e CEP antes de enviar
+    const cleanData = {
+      ...formData,
+      cpf: formData.cpf.replace(/\D/g, ""),
+      phone: formData.phone.replace(/\D/g, ""),
+      zipCode: formData.zipCode.replace(/\D/g, ""),
+    };
+
+    onSave(cleanData);
   };
 
   const formatCPF = (value: string) => {
